@@ -1,0 +1,42 @@
+def phone_number():
+    """ 
+    Cleans user phone numbers
+
+    Argument:
+        Phone number from user (str)
+
+    Returns:
+        Cleaned phoned number (str)
+
+    Errors raised:
+        Raises an error if the number inputted is not the correct length after adjusting for the initial zero
+    
+    """
+
+    orig_num = input("Enter phone number: ")
+
+# removing non numeric characters from string
+
+    new_num = ''
+    for i in orig_num:
+     if i.isnumeric():
+         new_num += i
+
+# adding initial zero if missing
+
+    if new_num[0] != '0':
+        new_num = '0' + new_num 
+    else:
+        new_num = new_num
+
+# raising error
+    
+    num_len_req = 10
+    if len(new_num) > num_len_req:
+        raise ValueError ('Number too long')
+    if len(new_num) < num_len_req:
+        raise ValueError ('Number too short')
+    else:
+        print('Cleaned Number:', new_num)
+ 
+phone_number()
