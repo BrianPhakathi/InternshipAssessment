@@ -1,0 +1,86 @@
+from selenium import webdriver  #Enabling the web controller
+from selenium.webdriver.common.keys import Keys  #Giving functionality to keyboard keys in controlling Chrome
+from selenium.webdriver.support import expected_conditions as EC  # For try
+from selenium.webdriver.support.ui import WebDriverWait     #For try
+from selenium.webdriver.common.by import By     #For try
+from bs4 import BeautifulSoup       #Looking through source code
+import time
+
+"""
+Scrapes data from Takealot.com
+
+
+The code still can't work for the handling of additional offers: It fails to read the contents of the drop-button after clicking for
+when there are more than two offers.
+
+"""
+
+PATH = "C:\Program Files (x86)\chromedriver.exe"
+driver = webdriver.Chrome(PATH)
+driver.get("https://www.takealot.com/russell-hobbs-2200w-crease-control-iron/PLID34147865")
+
+
+## Price
+
+html = driver.page_source
+soup = BeautifulSoup(html, "lxml") 
+price = soup.findAll("div", class_= "buybox-module_price_2YUFa")
+spans = price[0].findAll("span", class_= "currency plus currency-module_currency_29IIm")
+print('Price: ', spans[0].text.strip())
+
+
+## Availability
+
+available = soup.findAll("div", class_= "cell shrink stock-availability-status")
+print('Availability: ', available[0].text.strip())
+
+
+## Seller
+
+try:
+    element = WebDriverWait(driver, 2).until(
+        EC.presence_of_element_located((By.CLASS_NAME, "pdp-core-module_main-seller_20BMu"))
+    )
+    seller = soup.findAll("div", class_= "pdp-core-module_main-seller_20BMu")
+    spansi = seller[0].findAll("div", class_= "seller-information")
+    ays = spansi[0].findAll("a", href = True)
+    print('Seller : ', ays[0].text.strip())
+except:
+    driver.quit()
+
+
+## Opening next offer tab
+
+next = driver.find_element_by_xpath("//div[@class='drop-button']")
+next.click()
+# time.sleep(10) # Sleep 10 seconds while waiting for the page to load...
+
+
+## Price [Next Offer]
+
+price_next = soup.findAll("div", class_= "drop-button")
+spans = price_next[0].findAll("span", class_= "currency plus currency-module_currency_29IIm")
+print('Price [Next Offer]: ', spans[0].text.strip())
+
+
+## Availability [Next Offer]
+
+# available_next = soup.findAll("div", class_= "cell shrink stock-availability-status")
+# print('Next Offer - Availability: ', available_next[1].text.strip())
+
+
+## Seller Next
+
+# try:
+#     element = WebDriverWait(driver, 60).until(
+#         EC.presence_of_element_located((By.CLASS_NAME, "buying-choice-list-item buying-choice-list-item-module_buying-choice-list-item_1TaEB"))
+#     )
+#     seller_n = soup.findAll("div", class_= "buying-choice-list-item buying-choice-list-item-module_buying-choice-list-item_1TaEB")
+#     seller_next = seller_n[0].findAll("div", class_= "seller-information ")
+#     ayss = seller_next[0].findAll("a", href = True)
+#     print('Seller (Next Offer) : ', ayss[0].text.strip())
+#     print('Entering')
+# except:
+#     driver.quit()
+
+driver.quit()
